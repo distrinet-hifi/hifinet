@@ -6,7 +6,7 @@ from mapper import Mapper
 from argparse import ArgumentParser
 from time import sleep
 import random
-
+import json
 
 FILESIZE = 10
 TAU = 50
