@@ -155,7 +155,7 @@ class Collector:
                 try:
                     (ts_out, len, blen, plen, tau) = pout
                 except:
-                    print(pout)
+                    # print(pout)
                     continue
 
                 packet = (xid, ts_out, ts_in, len, blen, plen, tau)
