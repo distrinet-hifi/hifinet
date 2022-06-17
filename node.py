@@ -1,4 +1,4 @@
-DOCKER = "/snap/bin/docker"
+DOCKER = "docker"
 
 class Container:
     def __init__(self, name, image, parent):
