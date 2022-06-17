@@ -128,7 +128,7 @@ def bittorrent(net, n, m, master):
         peer = net.get('h%i' % i)
         peer.cmd("scp -o StrictHostKeyChecking=no root@%s:file.torrent /root/" % master)
         print('.', end='')
-    print('\n')
+    print('')
 
     print("*** Creating timeline", end='')
     timeline = [(0, x)]
@@ -138,7 +138,7 @@ def bittorrent(net, n, m, master):
         t = gen_date()
         timeline.append((t, i))
         print('.', end='')
-    print('\n')
+    print('')
 
     print("*** Downloading")
     timeline.sort(key=lambda y: y[0])
@@ -158,7 +158,7 @@ def bittorrent(net, n, m, master):
         peer = net.get('h%i' % i)
         peer.cmd("scp -o StrictHostKeyChecking=no * root@%s:/root/results/" % master)
         print('.')
-    print('\n')
+    print('')
 
     print("*** Saving metadata")
     metadata = net.snapshot()
