@@ -157,7 +157,7 @@ def bittorrent(net, n, m, master):
     for i in range(2, N+1):
         peer = net.get('h%i' % i)
         peer.cmd("scp -o StrictHostKeyChecking=no * root@%s:/root/results/" % master)
-        print('.')
+        print('.', end='')
     print('')
 
     print("*** Saving metadata")
@@ -194,8 +194,8 @@ if __name__ == '__main__':
     try:
         bittorrent(net, n, m, master)
         monitor.monitor()
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
     net.stop()
     net.clean()
