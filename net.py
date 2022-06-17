@@ -2,7 +2,7 @@ from node import Node, Host, Switch
 from link import Link
 
 
-IMAGE = 'ubuntu'
+IMAGE = 'ayyoub321456/host-img'
 NETWORK = '10.0.0.0/8'
 
 class Network:
