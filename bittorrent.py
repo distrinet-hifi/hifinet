@@ -186,7 +186,7 @@ if __name__ == '__main__':
     for ip in workers:
         infra.add_worker(ip, key='/root/.ssh/id_rsa')
     mapper = RenaterMapper(infra, topo)
-    net = Network(mapper)
+    net = RenaterNetwork(mapper)
 
     net.start()
     monitor = Monitor(net)
