@@ -8,7 +8,7 @@ from time import sleep
 import random
 import json
 
-FILESIZE = 10
+FILESIZE = 100
 TAU = 50
 
 class RenaterTopo(Topo):
@@ -156,7 +156,7 @@ def bittorrent(net, n, m, master):
     print("*** Retrieving logs", end='')
     for i in range(2, N+1):
         peer = net.get('h%i' % i)
-        peer.cmd("scp -o StrictHostKeyChecking=no * root@%s:/root/results/" % master)
+        peer.cmd("scp -o StrictHostKeyChecking=no *.log root@%s:/root/results/" % master)
         print('.', end='')
     print('')
 
