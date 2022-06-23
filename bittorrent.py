@@ -148,7 +148,7 @@ def bittorrent(net, n, m, master):
         sleep(dt)
         peer = net.get('h%i' % i)
         logfile = "peer_%i.log" % i
-        peer.cmd("nohup ctorrent /root/file.torrent -s /root/ -v > /root/%s 2>&1 < /dev/null &" % logfile)
+        peer.cmd("nohup ctorrent /root/file.torrent -s /root/file -v > /root/%s 2>&1 < /dev/null &" % logfile)
         print("%.2f h%i" % (t, i))
         t_ = t
     sleep(2*TAU)
@@ -156,14 +156,15 @@ def bittorrent(net, n, m, master):
     print("*** Retrieving logs", end='')
     for i in range(2, N+1):
         peer = net.get('h%i' % i)
-        peer.cmd("scp -o StrictHostKeyChecking=no /root/*.log root@%s:results/" % master)
+        logfile = "/root/peer_%i.log" % i
+        peer.cmd("scp -o StrictHostKeyChecking=no %s root@%s:results/" % (logfile, master))
         print('.', end='')
     print('')
 
     print("*** Saving metadata")
     metadata = net.snapshot()
     raw = json.dumps(metadata)
-    with open('results/metadata', 'w') as f:
+    with open('/root/results/metadata', 'w') as f:
         f.write(raw)
 
 
@@ -184,7 +185,7 @@ if __name__ == '__main__':
     topo = RenaterTopo(n, m)
     infra = Infrastructure()
     for ip in workers:
-        infra.add_worker(ip, key='~/.ssh/id_rsa')
+        infra.add_worker(ip, key='/root/.ssh/id_rsa')
     mapper = RenaterMapper(infra, topo)
     net = RenaterNetwork(mapper)
 
@@ -197,8 +198,8 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
 
-    print("*** Waiting before terminating...")
-    sleep(100)
+    # print("*** Waiting before terminating...")
+    # sleep(100)
 
     net.stop()
     net.clean()
