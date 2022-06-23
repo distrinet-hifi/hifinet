@@ -114,19 +114,19 @@ def bittorrent(net, n, m, master):
 
     print("*** Starting tracker")
     server = net.get('h1')
-    server.cmd("bttrack --dfile download_file > server.log 2>&1 &")
+    server.cmd("bttrack --dfile /root/download_file > /root/server.log 2>&1 &")
 
     x = random.randint(2, N)
     print("*** Creating file (seeder is h%i)" % x)
     seeder = net.get('h%i' % x)
-    seeder.cmd("head -c %iM /dev/urandom > file" % FILESIZE)
-    seeder.cmd("""ctorrent -t -u "http://10.0.0.1:80/announce" -s file.torrent file""")
-    seeder.cmd("scp -o StrictHostKeyChecking=no file.torrent root@%s:" % master)
+    seeder.cmd("head -c %iM /dev/urandom > /root/file" % FILESIZE)
+    seeder.cmd("""ctorrent -t -u "http://10.0.0.1:80/announce" -s /root/file.torrent /root/file""")
+    seeder.cmd("scp -o StrictHostKeyChecking=no /root/file.torrent root@%s:results/" % master)
 
     print("*** Distributing torrent file", end='')
     for i in range(1, N+1):
         peer = net.get('h%i' % i)
-        peer.cmd("scp -o StrictHostKeyChecking=no root@%s:file.torrent /root/" % master)
+        peer.cmd("scp -o StrictHostKeyChecking=no root@%s:results/file.torrent /root/" % master)
         print('.', end='')
     print('')
 
@@ -148,7 +148,7 @@ def bittorrent(net, n, m, master):
         sleep(dt)
         peer = net.get('h%i' % i)
         logfile = "peer_%i.log" % i
-        peer.cmd("nohup ctorrent /root/file.torrent -v > %s 2>&1 < /dev/null &" % logfile)
+        peer.cmd("nohup ctorrent /root/file.torrent -s /root/ -v > /root/%s 2>&1 < /dev/null &" % logfile)
         print("%.2f h%i" % (t, i))
         t_ = t
     sleep(2*TAU)
@@ -156,14 +156,14 @@ def bittorrent(net, n, m, master):
     print("*** Retrieving logs", end='')
     for i in range(2, N+1):
         peer = net.get('h%i' % i)
-        peer.cmd("scp -o StrictHostKeyChecking=no *.log root@%s:/root/results/" % master)
+        peer.cmd("scp -o StrictHostKeyChecking=no /root/*.log root@%s:results/" % master)
         print('.', end='')
     print('')
 
     print("*** Saving metadata")
     metadata = net.snapshot()
     raw = json.dumps(metadata)
-    with open('/root/results/metadata', 'w') as f:
+    with open('results/metadata', 'w') as f:
         f.write(raw)
 
 
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     topo = RenaterTopo(n, m)
     infra = Infrastructure()
     for ip in workers:
-        infra.add_worker(ip, key='/root/.ssh/id_rsa')
+        infra.add_worker(ip, key='~/.ssh/id_rsa')
     mapper = RenaterMapper(infra, topo)
     net = RenaterNetwork(mapper)
 
@@ -196,6 +196,9 @@ if __name__ == '__main__':
         monitor.monitor()
     except Exception as e:
         print(e)
+
+    print("*** Waiting before terminating...")
+    sleep(100)
 
     net.stop()
     net.clean()

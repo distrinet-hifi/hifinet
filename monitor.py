@@ -12,7 +12,7 @@ class Monitor:
     
     def monitor(self):
         for worker in self.infra.workers:
-            worker.pull('/root/hifi/logs/%s.log' % worker.ip, 'hifi/logs/')
+            worker.pull('/root/hifi/logs/%s.log' % worker.ip, 'results/')
             database = DataBase(worker)
             database.parse()
             self.databases[worker.ip] = database
@@ -40,7 +40,7 @@ class Monitor:
             collector.sort()
             collector.analyse()
             
-            filename = 'hifi/results/%s--%s' % (intf1.name, intf2.name)
+            filename = 'results/%s--%s' % (intf1.name, intf2.name)
             collector.save(filename)
 
 
@@ -54,7 +54,7 @@ PATTERN_DEQ  = re.compile(r"^.*\s(?P<ts>[0-9]+\.[0-9]+):.*\s\[deq\]\s(?P<dev>[0-
 
 class DataBase:
     def __init__(self, worker):
-        self.filename = "hifi/logs/%s.log" % worker.ip
+        self.filename = "results/%s.log" % worker.ip
         self.worker = worker
 
         self.ifindexes = {}
