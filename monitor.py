@@ -18,6 +18,11 @@ class Monitor:
             self.databases[worker.ip] = database
 
         for link in self.net.links.values():
+            if 'sample' not in link.params:
+                continue
+            elif not link.params['sample']:
+                continue
+
             intf1, intf2 = link.intf1, link.intf2
             # db1, db2 = self.databases[intf1.parent.ip].ifindexes[intf1.ifindex], self.databases[intf2.parent.ip].ifindexes[intf2.ifindex]
             db1, db2 = {}, {}

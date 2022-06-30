@@ -16,17 +16,28 @@ class Link:
         intf2 = Interface(intf2_name, params)
         self.intf1 = intf1
         self.intf2 = intf2
+        
+        if 'sample' not in params:
+            mtu = 1500
+        elif params['sample']:
+            mtu = 1501
+        else:
+            mtu = 1500
 
         if node1.parent.ip == node2.parent.ip:
             worker = node1.parent
-            cmd = "ip link add %s type veth peer name %s; ip link set %s up; ip link set %s up" % (intf1_name, intf2_name, intf1_name, intf2_name)
+            cmd = "ip link add %s type veth peer name %s; " % (intf1_name, intf2_name)
+            cmd += "ip link set %s mtu %i up; " % (intf1_name, mtu)
+            cmd += "ip link set %s mtu %i up" % (intf2_name, mtu)
             worker.run(cmd)
 
         else:
             worker1, worker2 = node1.parent, node2.parent
             vid = Link.vid
-            cmd1 = "ip link add %s type vxlan id %i remote %s local %s dstport 4789; ip link set %s up" % (intf1_name, vid, worker2.ip, worker1.ip, intf1_name)
-            cmd2 = "ip link add %s type vxlan id %i remote %s local %s dstport 4789; ip link set %s up" % (intf2_name, vid, worker1.ip, worker2.ip, intf2_name)
+            cmd1 = "ip link add %s type vxlan id %i remote %s local %s dstport 4789; " % (intf1_name, vid, worker2.ip, worker1.ip)
+            cmd1 += "ip link set %s mtu %i up" % (intf1_name, mtu)
+            cmd2 = "ip link add %s type vxlan id %i remote %s local %s dstport 4789; " % (intf2_name, vid, worker1.ip, worker2.ip)
+            cmd += "ip link set %s mtu %i up" % (intf2_name, mtu)
             worker1.run(cmd1)
             worker2.run(cmd2)
             Link.vid += 1
@@ -59,6 +70,16 @@ class Interface:
         else:
             bw = '100Mbit'
 
+        if 'sample' in self.params:
+            sample = self.params['sample']
+        else:
+            sample = False
+
+        if sample:
+            filt = "bpf da obj /root/hifi/logger sec egress"
+        else:
+            filt = "protocol all prio 7 u32 match u32 0 0"
+
         if isinstance(self.node, Host):
             suffix = "ip netns exec %s" % self.node.container.cid
         elif isinstance(self.node, Switch):
@@ -67,10 +88,11 @@ class Interface:
         cmd = ""
         cmd += " %s tc qdisc add dev %s root handle 1: htb;" % (suffix, self.name)
         cmd += " %s tc class add dev %s parent 1: classid 1:10 htb rate %s;" % (suffix, self.name, bw)
-        cmd += " %s tc filter add dev %s parent 1: bpf da obj /root/hifi/logger sec egress flowid 1:10;" % (suffix, self.name)
+        cmd += " %s tc filter add dev %s parent 1: %s flowid 1:10;" % (suffix, self.name, filt)
         cmd += " %s tc qdisc add dev %s parent 1:10 handle 2: netem delay %s rate %s;" % (suffix, self.name, d, bw)
-        cmd += " %s tc qdisc add dev %s ingress handle ffff: ;" % (suffix, self.name)
-        cmd += " %s tc filter add dev %s parent ffff: bpf da obj /root/hifi/logger sec ingress;" % (suffix, self.name)
+        if sample:
+            cmd += " %s tc qdisc add dev %s ingress handle ffff: ;" % (suffix, self.name)
+            cmd += " %s tc filter add dev %s parent ffff: bpf da obj /root/hifi/logger sec ingress;" % (suffix, self.name)
 
         self.parent.run(cmd)
 
