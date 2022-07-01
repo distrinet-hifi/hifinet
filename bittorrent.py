@@ -75,7 +75,7 @@ class RenaterMapper(Mapper):
 class RenaterNetwork(Network):
     def _get_link(self, node1, node2):
         for linkname in self.links:
-            if node1 in linkname and node2 in linkname:
+            if node1+'-' in linkname and node2+'-' in linkname:
                 # return self.links[linkname]
                 return linkname
         return None
