@@ -37,7 +37,7 @@ class Link:
             cmd1 = "ip link add %s type vxlan id %i remote %s local %s dstport 4789; " % (intf1_name, vid, worker2.ip, worker1.ip)
             cmd1 += "ip link set %s mtu %i up" % (intf1_name, mtu)
             cmd2 = "ip link add %s type vxlan id %i remote %s local %s dstport 4789; " % (intf2_name, vid, worker1.ip, worker2.ip)
-            cmd += "ip link set %s mtu %i up" % (intf2_name, mtu)
+            cmd2 += "ip link set %s mtu %i up" % (intf2_name, mtu)
             worker1.run(cmd1)
             worker2.run(cmd2)
             Link.vid += 1
