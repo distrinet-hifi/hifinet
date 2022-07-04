@@ -175,12 +175,17 @@ if __name__ == '__main__':
     parser.add_argument('--workers', type=str)
     parser.add_argument('--switches', '-n', type=int, default=2)
     parser.add_argument('--peers', '-m', type=int, default=2)
+    parser.add_argument('--seed', '-s', type=int, default=0)
     
     args = parser.parse_args()
     master = args.master
     workers = args.workers.split(',')
     n = args.switches
     m = args.peers
+    s = args.seed
+    
+    if s > 0:
+        random.seed(s)
 
     topo = RenaterTopo(n, m)
     infra = Infrastructure()
