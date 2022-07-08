@@ -8,7 +8,7 @@ from time import sleep
 import random
 import json
 
-FILESIZE = 100
+FILESIZE = 20
 TAU = 50
 
 class RenaterTopo(Topo):
@@ -34,7 +34,7 @@ class RenaterTopo(Topo):
                 ss = self.add_switch('s%i' % j)
                 j += 1
                 self.blocks[site].append(ss)
-                link = self.add_link(s, ss, delay='1ms', bw='1000Mbit')
+                link = self.add_link(s, ss, delay='1ms', bw='200Mbit')
                 self.linkmap['access'][site].append(link)
 
                 for iii in range(m):
@@ -42,26 +42,26 @@ class RenaterTopo(Topo):
                     k += 1
                     self.blocks[site].append(h)
                     self.hostmap[site][ii].append(h)
-                    link = self.add_link(ss, h, delay='1ms', bw='100Mbit')
+                    link = self.add_link(ss, h, delay='1ms', bw='20Mbit')
                     self.linkmap['edge'][site].append(link)
 
-        link = self.add_link(cores[0], cores[1], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[0], cores[1], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[1], cores[2], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[1], cores[2], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[1], cores[3], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[1], cores[3], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[1], cores[5], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[1], cores[5], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[3], cores[4], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[3], cores[4], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[5], cores[6], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[5], cores[6], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[5], cores[8], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[5], cores[8], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[7], cores[8], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[7], cores[8], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
-        link = self.add_link(cores[8], cores[9], delay='10ms', bw='10000Mbit', sample=True)
+        link = self.add_link(cores[8], cores[9], delay='5ms', bw='2000Mbit', sample=True)
         self.linkmap['core'].append(link)
 
 
