@@ -29,7 +29,6 @@ class Container:
 
     def kill(self):
         cmd = "%s rm -f %s" % (DOCKER, self.cid)
-        print(cmd)
         self.parent.run(cmd)
 
 
