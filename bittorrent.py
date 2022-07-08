@@ -205,7 +205,8 @@ if __name__ == '__main__':
 
     # print("*** Waiting before terminating...")
     # sleep(100)
-
+    
+    print("*** Shutting down...")
     net.stop()
     net.clean()
     infra.shutdown()
