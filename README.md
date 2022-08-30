@@ -1,2 +1,2 @@
 # hifinet
-Like Distrinet but can actually scale
+Like Mininet but can actually scale
