@@ -277,6 +277,8 @@ class Collector:
 
     def save(self, filename):
         data = {}
+        data['tss1'] = self.tss1
+        data['tss2'] = self.tss2
         data['rtds'] = self.rtds
         data['rtds_'] = self.rtds_
         raw = json.dumps(data)
