@@ -18,11 +18,11 @@ class Link:
         self.intf2 = intf2
         
         if 'sample' not in params:
-            mtu = 1500
+            mtu = 1400
         elif params['sample']:
-            mtu = 1501
+            mtu = 1401
         else:
-            mtu = 1500
+            mtu = 1400
 
         if node1.parent.ip == node2.parent.ip:
             worker = node1.parent
