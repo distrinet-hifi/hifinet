@@ -26,6 +26,22 @@ class Container:
         cmd = """%s exec %s sh -c "%s" """ % (DOCKER, self.cid, command)
         (stdout, stderr) = self.parent.run(cmd)
         return (stdout, stderr)
+    
+    def push(self, path, remote_path):
+        filename = path.split('/')[-1]
+        inter_path = '/tmp/' + filename
+        self.parent.push(path, inter_path)
+        cmd = """%s cp %s %s:%s""" % (DOCKER, inter_path, self.cid, remote_path)
+        (stdout, stderr) = self.parent.run(cmd)
+        return (stdout, stderr)
+    
+    def pull(self, path, local_path):
+        filename = path.split('/')[-1]
+        inter_path = '/tmp/' + filename
+        cmd = """%s cp %s:%s %s""" % (DOCKER, self.cid, path, inter_path)
+        (stdout, stderr) = self.parent.run(cmd)
+        self.parent.pull(local_path, inter_path)
+        return (stdout, stderr)
 
     def kill(self):
         cmd = "%s rm -f %s" % (DOCKER, self.cid)
@@ -46,6 +62,12 @@ class Host(Node):
 
     def cmd(self, command):
         return self.container.cmd(command)
+    
+    def push(self, path, remote_path):
+        return self.container.push(path, remote_path)
+    
+    def pull(self, path, local_path):
+        return self.container.pull(path, local_path)
 
     def attach(self, intf):
         self.intfs.append(intf)
