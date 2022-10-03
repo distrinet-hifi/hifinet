@@ -40,7 +40,7 @@ class Container:
         inter_path = '/tmp/' + filename
         cmd = """%s cp %s:%s %s""" % (DOCKER, self.cid, path, inter_path)
         (stdout, stderr) = self.parent.run(cmd)
-        self.parent.pull(local_path, inter_path)
+        self.parent.pull(inter_path, local_path)
         return (stdout, stderr)
 
     def kill(self):
