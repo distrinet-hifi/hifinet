@@ -2,6 +2,7 @@ import json
 import re
 import numpy as np
 
+THETA = 1000 # µs
 
 class Monitor:
     def __init__(self, net):
@@ -164,6 +165,10 @@ class Collector:
                     continue
 
                 packet = (xid, ts_out, ts_in, len, blen, plen, tau)
+                
+                if ts_in - ts_out > THETA:
+                    continue
+                    
                 self.packets12.append(packet)
 
         # 2 -> 1
@@ -182,6 +187,10 @@ class Collector:
                     continue
 
                 packet = (xid, ts_out, ts_in, len, blen, plen, tau)
+                
+                if ts_in - ts_out > THETA:
+                    continue
+                    
                 self.packets21.append(packet)
 
     def sort(self):
