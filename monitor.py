@@ -2,7 +2,7 @@ import json
 import re
 import numpy as np
 
-THETA = 1000 # µs
+
 
 class Monitor:
     def __init__(self, net):
@@ -56,7 +56,7 @@ length = len
 PATTERN_IN   = re.compile(r"^.*\s(?P<ts>[0-9]+\.[0-9]+):.*\s\[in\]\s(?P<dev>[0-9]+)\s(?P<xid>[0-9]+)\s*$")
 PATTERN_OUT  = re.compile(r"^.*\s(?P<ts>[0-9]+\.[0-9]+):.*\s\[out\]\s(?P<dev>[0-9]+)\s(?P<xid>[0-9]+)\s(?P<len>[0-9]+)\s*$")
 PATTERN_ENQ = re.compile(r"^.*\s\[enq\]\s(?P<dev>[0-9]+)\s(?P<xid>[0-9]+)\s(?P<blen>[0-9]+)\s*$")
-PATTERN_DEQ  = re.compile(r"^.*\s(?P<ts>[0-9]+\.[0-9]+):.*\s\[deq\]\s(?P<dev>[0-9]+)\s(?P<len>[0-9]+)\s*$")
+PATTERN_DEQ  = re.compile(r"^.*\s(?P<ts>[0-9]+\.[0-9]+):.*\s\[deq\]\s(?P<dev>[0-9]+)\s(?P<len>[0-9]+)\s(?P<tau>[0-9]+)\s*$")
 
 class DataBase:
     def __init__(self, worker):
@@ -112,7 +112,7 @@ class DataBase:
                         tau = 0
                         plen = 0
                         if self.lastl[dev] is not None:
-                            tau = ts - self.lastt[dev] # us
+                            tau = self.lastt[dev] / 1000 # us
                             plen = self.lastl[dev]
                         self.outs[dev][xid][-1] = (ts, len, blen, plen, tau)
                 return
@@ -120,9 +120,9 @@ class DataBase:
         elif '[deq]' in line:
             m = PATTERN_DEQ.match(line)
             if m is not None:
-                dev, ts, len = int(m.group('dev')), int(1e6*float(m.group('ts'))), int(m.group('len'))
+                dev, ts, len, tau = int(m.group('dev')), int(1e6*float(m.group('ts'))), int(m.group('len')), int(m.group('tau'))
                 if dev in self.ifindexes:
-                    self.lastt[dev] = ts
+                    self.lastt[dev] = tau
                     self.lastl[dev] = len
                 return
 
@@ -165,10 +165,6 @@ class Collector:
                     continue
 
                 packet = (xid, ts_out, ts_in, len, blen, plen, tau)
-                
-                if ts_in - ts_out > THETA:
-                    continue
-                    
                 self.packets12.append(packet)
 
         # 2 -> 1
@@ -187,10 +183,6 @@ class Collector:
                     continue
 
                 packet = (xid, ts_out, ts_in, len, blen, plen, tau)
-                
-                if ts_in - ts_out > THETA:
-                    continue
-                    
                 self.packets21.append(packet)
 
     def sort(self):
@@ -290,6 +282,10 @@ class Collector:
         data['tss2'] = self.tss2
         data['rtds'] = self.rtds
         data['rtds_'] = self.rtds_
+        data['lens'] = self.lens
+        data['plens'] = self.plens
+        data['blens'] = self.blens
+        data['taus'] = self.taus
         raw = json.dumps(data)
         with open(filename, 'w') as f:
             f.write(raw)
