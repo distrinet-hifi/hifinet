@@ -38,6 +38,8 @@ class Network:
         
     
     def start(self):
+        print("* Starting end-hosts", end='')
+        
         for hostname in self.topo.hosts:
             parent = self.mapper.mapping[hostname]
             ip = Network._gen_ip()
@@ -45,6 +47,9 @@ class Network:
             self.hosts[hostname] = host
             self.nodes[hostname] = host
             parent.nodes[hostname] = host
+            print('.', end='')
+         
+        print("* Starting switches", end='')
         
         for switchname in self.topo.switches:
             parent = self.mapper.mapping[switchname]
@@ -52,6 +57,9 @@ class Network:
             self.switches[switchname] = switch
             self.nodes[switchname] = switch
             parent.nodes[switchname] = switch
+            print('.', end='')
+            
+        print("* Setting up links", end='')
         
         for (node1_name, node2_name, params) in self.topo.links:
             node1, node2 = self.nodes[node1_name], self.nodes[node2_name]
@@ -60,6 +68,7 @@ class Network:
             linkeman = "%s--%s" % (link.intf2.name, link.intf1.name)
             self.links[linkname] = link
             self.links[linkeman] = link
+            print('.', end='')
 
         for worker in self.infra.workers:
             worker.monitor()
