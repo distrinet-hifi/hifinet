@@ -48,6 +48,7 @@ class Network:
             self.nodes[hostname] = host
             parent.nodes[hostname] = host
             print('.', end='')
+        print('')
          
         print("* Starting switches", end='')
         
@@ -58,6 +59,7 @@ class Network:
             self.nodes[switchname] = switch
             parent.nodes[switchname] = switch
             print('.', end='')
+        print('')
             
         print("* Setting up links", end='')
         
@@ -69,6 +71,7 @@ class Network:
             self.links[linkname] = link
             self.links[linkeman] = link
             print('.', end='')
+        print('')
 
         for worker in self.infra.workers:
             worker.monitor()
