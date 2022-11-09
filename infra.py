@@ -28,7 +28,7 @@ class Worker:
     def bgrun(self, command, out='/dev/null', err='/dev/null'):
         if type(command) is list:
             command = ' '.join(command)
-        command = "nohup %s & > %s 2>%s < /dev/null" % (command, out, err)
+        command = "nohup %s > %s 2>%s < /dev/null &" % (command, out, err)
         stdin, stdout, stderr = self.client.exec_command(command)
         return stdout, stderr
 
